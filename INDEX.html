@@ -3,1505 +3,838 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Farmetric RootScan — Soil Intelligence</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<title>Oriva – Smart Irrigation, Made Simple</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:auto; }
-body {
-  background:#0a0602;
-  color:#f0e8dc;
-  font-family:'DM Mono',monospace;
-  overflow-x:hidden;
-  cursor:none;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Custom cursor */
-#cursor {
-  position:fixed; width:8px; height:8px;
-  background:#4ecb71; border-radius:50%;
-  pointer-events:none; z-index:9999;
-  transform:translate(-50%,-50%);
-  transition:transform 0.1s, width 0.3s, height 0.3s;
-  mix-blend-mode:screen;
-}
-#cursor-ring {
-  position:fixed; width:32px; height:32px;
-  border:1px solid rgba(78,203,113,0.4); border-radius:50%;
-  pointer-events:none; z-index:9998;
-  transform:translate(-50%,-50%);
-  transition:transform 0.15s ease-out, width 0.3s, height 0.3s;
-}
+  :root {
+    --green-deep: #1a3d2b;
+    --green-mid: #2d6a4f;
+    --green-fresh: #52b788;
+    --green-light: #95d5b2;
+    --green-pale: #d8f3dc;
+    --earth: #8b5e3c;
+    --earth-light: #c9a87c;
+    --cream: #faf7f2;
+    --white: #ffffff;
+    --text-dark: #141c15;
+    --text-mid: #3d5a45;
+    --text-light: #6b8f72;
+  }
 
-/* NAV */
-nav {
-  position:fixed; top:0; left:0; right:0; z-index:500;
-  display:flex; justify-content:space-between; align-items:center;
-  padding:1.4rem 2.5rem;
-  background:linear-gradient(180deg,rgba(10,6,2,0.8) 0%,transparent 100%);
-}
-.logo {
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.35rem; font-weight:600; letter-spacing:0.05em;
-  color:#f0e8dc;
-}
-.logo em { color:#4ecb71; font-style:italic; }
-.nav-right {
-  font-size:0.6rem; letter-spacing:0.25em; color:rgba(240,232,220,0.35);
-  text-transform:uppercase;
-}
+  html { scroll-behavior: smooth; }
 
-/* ══ HERO ══ */
-#hero {
-  position:relative; width:100%; height:100vh;
-  overflow:hidden;
-}
-/* Sky background — transitions via JS */
-#heroBg {
-  position:absolute; inset:0;
-  background:linear-gradient(180deg,#0d2040 0%,#2a4a70 40%,#d4703a 65%,#3d2208 82%,#1a0f06 100%);
-  transition:background 3s ease;
-  z-index:0;
-}
-/* Stars layer */
-#starsLayer {
-  position:absolute; inset:0; z-index:1; pointer-events:none;
-  transition:opacity 2s;
-}
-.star-dot {
-  position:absolute; background:white; border-radius:50%;
-  animation:twinkleStar 2s infinite alternate;
-}
-@keyframes twinkleStar { from{opacity:0.15} to{opacity:0.95} }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
 
-/* SUN — DOM element like old version */
-#heroSun {
-  position:absolute; z-index:3;
-  width:86px; height:86px;
-  background:radial-gradient(circle, #fffde7 20%, #ffd740 55%, transparent 100%);
-  border-radius:50%;
-  box-shadow: 0 0 60px 30px rgba(255,215,64,0.35), 0 0 120px 60px rgba(255,180,30,0.15);
-  left:50%; transform:translateX(-50%);
-  top:14%;
-  transition:top 3s ease, opacity 2.5s ease, box-shadow 3s ease;
-  animation:sunPulseDOM 4s ease-in-out infinite;
-}
-@keyframes sunPulseDOM {
-  0%,100%{box-shadow:0 0 60px 30px rgba(255,215,64,0.35),0 0 120px 60px rgba(255,180,30,0.15);}
-  50%{box-shadow:0 0 80px 45px rgba(255,220,80,0.55),0 0 150px 75px rgba(255,190,40,0.25);}
-}
-/* horizon glow at sunrise/sunset */
-#horizonGlow {
-  position:absolute; bottom:38%; left:0; right:0; height:200px; z-index:2;
-  background:radial-gradient(ellipse 60% 100% at 50% 100%, rgba(220,100,30,0.4) 0%, transparent 100%);
-  opacity:0; transition:opacity 2s;
-  pointer-events:none;
-}
+  /* ── NAV ─────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 6vw;
+    background: rgba(250,247,242,0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(82,183,136,0.15);
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--green-deep);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--green-fresh); }
+  .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-mid);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--green-fresh); }
+  .nav-cta {
+    background: var(--green-deep);
+    color: var(--white) !important;
+    padding: 0.55rem 1.4rem;
+    border-radius: 100px;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--green-mid) !important; }
 
-/* CLOUDS — DOM elements */
-.hero-cloud {
-  position:absolute; z-index:4; pointer-events:none;
-  border-radius:50px;
-  animation:cloudDriftDOM linear infinite;
-}
-@keyframes cloudDriftDOM {
-  from{transform:translateX(-280px); opacity:0;}
-  5%{opacity:1;}
-  90%{opacity:1;}
-  to{transform:translateX(calc(100vw + 280px)); opacity:0;}
-}
+  /* ── HERO ─────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 7rem 6vw 4rem;
+    gap: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 70% at 75% 50%, rgba(82,183,136,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 10% 80%, rgba(139,94,60,0.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
 
-/* RAIN */
-.rain-drop-dom {
-  position:absolute; z-index:6;
-  width:1.5px;
-  background:linear-gradient(180deg,transparent,rgba(160,210,240,0.85));
-  border-radius:1px;
-  animation:rainDropFall linear forwards;
-  pointer-events:none;
-}
-@keyframes rainDropFall {
-  from{opacity:0; transform:translateY(-40px);}
-  8%{opacity:1;}
-  to{opacity:0.1; transform:translateY(100vh);}
-}
-#rainLayer { position:absolute; inset:0; z-index:6; pointer-events:none; overflow:hidden; }
+  .hero-text { position: relative; z-index: 1; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--green-pale);
+    color: var(--green-mid);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.8rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-eyebrow::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* CANVAS — plants only */
-#heroCanvas {
-  position:absolute; inset:0; width:100%; height:100%;
-  z-index:5;
-}
-.hero-text {
-  position:absolute; z-index:10;
-  top:50%; left:50%; transform:translate(-50%,-60%);
-  text-align:center; pointer-events:none;
-}
-.hero-eyebrow {
-  font-size:0.58rem; letter-spacing:0.45em; color:#4ecb71;
-  text-transform:uppercase; margin-bottom:1.2rem;
-  opacity:0; animation:fadeUp 1.2s 0.8s forwards;
-}
-.hero-h1 {
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(3.5rem,9vw,8rem);
-  font-weight:300; line-height:0.95;
-  color:#f0e8dc; letter-spacing:-0.02em;
-  opacity:0; animation:fadeUp 1.2s 1s forwards;
-}
-.hero-h1 em { color:#4ecb71; font-style:italic; }
-.hero-sub {
-  margin-top:1.8rem;
-  font-size:0.75rem; color:rgba(240,232,220,0.45);
-  letter-spacing:0.1em; line-height:1.9;
-  opacity:0; animation:fadeUp 1.2s 1.3s forwards;
-}
-.scroll-hint {
-  position:absolute; bottom:3rem; left:50%; transform:translateX(-50%);
-  font-size:0.55rem; letter-spacing:0.35em; color:rgba(240,232,220,0.25);
-  text-transform:uppercase; z-index:10;
-  animation:pulse 2.5s ease-in-out infinite;
-}
-.scroll-hint::after {
-  content:''; display:block; width:1px; height:40px;
-  background:linear-gradient(180deg,rgba(78,203,113,0.6),transparent);
-  margin:0.8rem auto 0;
-}
-@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-@keyframes pulse { 0%,100%{opacity:0.25} 50%{opacity:0.7} }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.8rem, 5vw, 4.4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--green-deep);
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--green-fresh);
+    font-weight: 300;
+  }
+  .hero p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-mid);
+    max-width: 480px;
+    margin-bottom: 2.4rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-buttons {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--green-deep);
+    color: var(--white);
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 100px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 4px 20px rgba(26,61,43,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,61,43,0.3); background: var(--green-mid); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--green-deep);
+    border: 1.5px solid var(--green-light);
+    padding: 0.9rem 2rem;
+    border-radius: 100px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: var(--green-pale); border-color: var(--green-fresh); }
 
-/* SCENE LABEL */
-.scene-label {
-  position:absolute; bottom:3rem; right:2.5rem; z-index:10;
-  font-size:0.55rem; letter-spacing:0.3em; color:rgba(240,232,220,0.2);
-  text-transform:uppercase;
-}
+  /* ── HERO VISUAL ─────────────────────────── */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeUp 0.8s 0.15s ease both;
+  }
+  .device-card {
+    background: var(--white);
+    border-radius: 28px;
+    padding: 2.5rem 2rem;
+    width: 320px;
+    box-shadow: 0 30px 80px rgba(26,61,43,0.15), 0 0 0 1px rgba(82,183,136,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+  .device-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--green-fresh), var(--green-light), var(--earth-light));
+  }
+  .device-icon {
+    width: 60px; height: 60px;
+    background: var(--green-pale);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+  }
+  .device-card h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    color: var(--green-deep);
+    margin-bottom: 0.4rem;
+  }
+  .device-card p { font-size: 0.82rem; color: var(--text-light); margin-bottom: 1.4rem; }
+  .soil-bar-wrap { margin-bottom: 0.5rem; }
+  .soil-bar-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-mid); margin-bottom: 0.3rem; }
+  .soil-bar { height: 6px; background: var(--green-pale); border-radius: 100px; overflow: hidden; }
+  .soil-bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--green-mid), var(--green-fresh)); animation: fillBar 1.5s ease both; }
+  @keyframes fillBar { from { width: 0 !important; } }
+  .status-badge {
+    margin-top: 1.5rem;
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    color: #2e7d32;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .status-badge .dot { width: 8px; height: 8px; background: #4caf50; border-radius: 50%; animation: pulse 2s infinite; }
+  .floating-tag {
+    position: absolute;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--green-deep);
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .tag1 { top: -20px; right: -40px; animation: float 4s ease-in-out infinite; }
+  .tag2 { bottom: 30px; left: -50px; animation: float 4s 2s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
-/* ══ SECTIONS ══ */
-.section {
-  position:relative; overflow:hidden;
-  min-height:100vh;
-  display:flex; align-items:center;
-}
-.section-bg-dark { background:#080502; }
-.section-bg-mid { background:#0d0806; }
+  /* ── SECTION COMMON ───────────────────────── */
+  section { padding: 7rem 6vw; }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-fresh);
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700;
+    color: var(--green-deep);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.2rem;
+  }
+  .section-sub {
+    font-size: 1rem;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 560px;
+  }
 
-.section-inner {
-  position:relative; z-index:5;
-  max-width:1300px; margin:0 auto;
-  padding:4rem 2.5rem; width:100%;
-}
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-.section-tag {
-  font-size:0.56rem; letter-spacing:0.4em;
-  color:#4ecb71; text-transform:uppercase; margin-bottom:1rem;
-}
-.section-h2 {
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(2.8rem,5.5vw,5.5rem);
-  font-weight:300; line-height:1.05;
-  letter-spacing:-0.01em; color:#f0e8dc;
-  margin-bottom:1.4rem;
-}
-.section-h2 em { color:#4ecb71; font-style:italic; }
-.section-p {
-  font-size:0.75rem; color:rgba(240,232,220,0.42);
-  line-height:2; max-width:420px;
-}
+  /* ── PROBLEM ──────────────────────────────── */
+  .problem {
+    background: var(--green-deep);
+    color: var(--white);
+    border-radius: 32px;
+    margin: 0 3vw;
+    padding: 6rem 6vw;
+  }
+  .problem .section-label { color: var(--green-light); }
+  .problem .section-title { color: var(--white); }
+  .problem .section-sub { color: rgba(255,255,255,0.65); }
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+  .problem-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 1.8rem;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .problem-card:hover { background: rgba(255,255,255,0.11); transform: translateY(-4px); }
+  .problem-card .icon { font-size: 2rem; margin-bottom: 1rem; }
+  .problem-card h4 { font-family: 'Fraunces', serif; font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--green-light); }
+  .problem-card p { font-size: 0.88rem; color: rgba(255,255,255,0.6); line-height: 1.6; }
+  .problem-footer {
+    margin-top: 3rem;
+    padding: 1.4rem 2rem;
+    background: rgba(255,255,255,0.07);
+    border-left: 3px solid var(--green-fresh);
+    border-radius: 0 12px 12px 0;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.8);
+    font-style: italic;
+  }
 
-/* ══ SOIL SIMULATOR SECTION ══ */
-#sim-section {
-  min-height:100vh; background:#080502;
-}
-.sim-grid {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:5rem; align-items:center;
-}
-#soilCanvas {
-  width:100%; aspect-ratio:1/1.1;
-  border-radius:4px;
-  display:block;
-}
-.sim-status {
-  position:relative;
-  padding:2rem 0;
-}
-.status-scenario {
-  font-size:0.56rem; letter-spacing:0.35em;
-  color:#4ecb71; text-transform:uppercase;
-  margin-bottom:0.8rem;
-  transition:color 1s;
-}
-.status-headline {
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(1.8rem,3.5vw,3.2rem);
-  font-weight:300; color:#f0e8dc;
-  line-height:1.1; margin-bottom:1.5rem;
-  transition:opacity 0.8s;
-}
-.status-body {
-  font-size:0.72rem; color:rgba(240,232,220,0.45);
-  line-height:1.95; max-width:380px;
-}
-.moisture-readout {
-  margin-top:2.5rem;
-  display:flex; flex-direction:column; gap:0.9rem;
-}
-.mread-row {
-  display:flex; align-items:center; gap:1.2rem;
-}
-.mread-label {
-  font-size:0.58rem; letter-spacing:0.15em; color:rgba(240,232,220,0.3);
-  text-transform:uppercase; width:70px; flex-shrink:0;
-}
-.mread-track {
-  flex:1; height:2px; background:rgba(255,255,255,0.07); border-radius:1px; overflow:hidden;
-}
-.mread-fill {
-  height:100%; border-radius:1px; transition:width 1.5s ease, background 1.5s ease;
-}
-.mread-val {
-  font-size:0.62rem; color:rgba(240,232,220,0.45);
-  width:36px; text-align:right; flex-shrink:0;
-}
-.scenario-dots {
-  display:flex; gap:0.5rem; margin-top:2.5rem;
-}
-.sdot {
-  width:6px; height:6px; border-radius:50%;
-  background:rgba(255,255,255,0.15);
-  transition:background 0.5s, transform 0.5s;
-}
-.sdot.active { background:#4ecb71; transform:scale(1.4); }
+  /* ── HOW IT WORKS ─────────────────────────── */
+  .how { background: var(--cream); }
+  .how-inner { max-width: 900px; margin: 0 auto; }
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 4rem;
+    position: relative;
+  }
+  .steps::before {
+    content: '';
+    position: absolute;
+    left: 28px; top: 28px; bottom: 28px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--green-fresh), var(--green-light), transparent);
+  }
+  .step {
+    display: flex; gap: 2rem;
+    padding: 1.5rem 0;
+    align-items: flex-start;
+    transition: transform 0.2s;
+  }
+  .step:hover { transform: translateX(6px); }
+  .step-num {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    background: var(--white);
+    border: 2px solid var(--green-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--green-deep);
+    box-shadow: 0 4px 16px rgba(82,183,136,0.2);
+    position: relative; z-index: 1;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .step:hover .step-num { background: var(--green-fresh); border-color: var(--green-fresh); color: var(--white); }
+  .step-body { padding-top: 0.6rem; }
+  .step-body h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    color: var(--green-deep);
+    margin-bottom: 0.4rem;
+  }
+  .step-body p { font-size: 0.92rem; color: var(--text-mid); line-height: 1.6; }
+  .step-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
+  .step-tag {
+    background: var(--green-pale);
+    color: var(--green-mid);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-weight: 500;
+  }
 
-/* ══ FIELD MAP SECTION ══ */
-#map-section { background:#0d0806; }
-.map-grid {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:5rem; align-items:center;
-}
-#fieldCanvas {
-  width:100%; aspect-ratio:1/0.75;
-  border-radius:4px; display:block;
-}
-.map-legend-block { margin-top:2rem; }
-.legend-row {
-  display:flex; align-items:center; gap:0.8rem;
-  margin-bottom:0.7rem;
-}
-.legend-swatch {
-  width:24px; height:3px; border-radius:2px;
-}
-.legend-text {
-  font-size:0.6rem; color:rgba(240,232,220,0.35);
-  letter-spacing:0.12em; text-transform:uppercase;
-}
-.probe-status {
-  margin-top:2.5rem; padding:1.2rem 1.5rem;
-  border-left:2px solid rgba(78,203,113,0.3);
-  background:rgba(78,203,113,0.04);
-  border-radius:0 3px 3px 0;
-}
-.probe-status-label {
-  font-size:0.55rem; letter-spacing:0.3em;
-  color:#4ecb71; text-transform:uppercase; margin-bottom:0.6rem;
-}
-.probe-status-val {
-  font-size:0.78rem; color:#f0e8dc; line-height:1.7;
-}
+  /* ── COMPARISON ───────────────────────────── */
+  .compare { background: var(--white); }
+  .compare-table {
+    margin-top: 3.5rem;
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(26,61,43,0.08);
+  }
+  .compare-table table { width: 100%; border-collapse: collapse; }
+  .compare-table th {
+    padding: 1.2rem 1.8rem;
+    text-align: left;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .compare-table th:first-child { background: #f5f5f5; color: #888; }
+  .compare-table th:last-child { background: var(--green-deep); color: var(--white); }
+  .compare-table td {
+    padding: 1rem 1.8rem;
+    font-size: 0.95rem;
+    border-top: 1px solid #f0f0f0;
+  }
+  .compare-table td:first-child { background: var(--white); color: var(--text-mid); }
+  .compare-table td:last-child { background: #f0faf4; color: var(--green-deep); font-weight: 500; }
+  .compare-table tr:hover td:last-child { background: var(--green-pale); }
 
-/* ══ ROOT SCIENCE SECTION ══ */
-#root-section { background:#080502; }
-.root-cinematic {
-  position:relative; width:100%;
-}
-#rootCanvas {
-  width:100%; aspect-ratio:16/7;
-  display:block; border-radius:4px;
-}
-.root-caption {
-  margin-top:2rem;
-  display:flex; justify-content:space-between;
-  gap:1rem; flex-wrap:wrap;
-}
-.root-cap-item { flex:1; min-width:180px; }
-.rci-title {
-  font-size:0.58rem; letter-spacing:0.22em;
-  text-transform:uppercase; margin-bottom:0.4rem;
-}
-.rci-body {
-  font-size:0.65rem; color:rgba(240,232,220,0.35);
-  line-height:1.8;
-}
+  /* ── BENEFITS ─────────────────────────────── */
+  .benefits { background: var(--cream); }
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+  .benefit-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2rem 1.6rem;
+    border: 1px solid rgba(82,183,136,0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .benefit-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(26,61,43,0.1); }
+  .benefit-icon { font-size: 2.2rem; margin-bottom: 1rem; }
+  .benefit-card h4 { font-family: 'Fraunces', serif; font-size: 1.05rem; color: var(--green-deep); margin-bottom: 0.4rem; }
+  .benefit-card p { font-size: 0.85rem; color: var(--text-light); line-height: 1.6; }
 
-/* ══ STATS ══ */
-#stats-section {
-  background:#0a0602;
-  border-top:1px solid rgba(240,232,220,0.04);
-  border-bottom:1px solid rgba(240,232,220,0.04);
-  min-height:auto; padding:5rem 2.5rem;
-}
-.stats-row {
-  display:flex; justify-content:space-around;
-  flex-wrap:wrap; gap:2rem;
-  max-width:1000px; margin:0 auto;
-  text-align:center;
-}
-.stat-n {
-  font-family:'Cormorant Garamond',serif;
-  font-size:4.5rem; font-weight:300;
-  color:#4ecb71; line-height:1;
-}
-.stat-l {
-  font-size:0.58rem; letter-spacing:0.22em;
-  color:rgba(240,232,220,0.28); text-transform:uppercase;
-  margin-top:0.4rem;
-}
+  /* ── SCIENCE ──────────────────────────────── */
+  .science {
+    background: linear-gradient(135deg, #f0faf4 0%, var(--cream) 100%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .science-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+  .sci-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1rem;
+    background: var(--white);
+    border-radius: 14px;
+    border-left: 3px solid var(--green-fresh);
+    box-shadow: 0 2px 12px rgba(26,61,43,0.06);
+  }
+  .sci-icon { font-size: 1.4rem; }
+  .sci-item h5 { font-family: 'Fraunces', serif; font-size: 0.95rem; color: var(--green-deep); margin-bottom: 0.2rem; }
+  .sci-item p { font-size: 0.82rem; color: var(--text-light); }
+  .science-quote {
+    background: var(--green-deep);
+    color: var(--white);
+    border-radius: 24px;
+    padding: 3rem;
+    position: relative;
+  }
+  .science-quote::before {
+    content: '"';
+    font-family: 'Fraunces', serif;
+    font-size: 8rem;
+    position: absolute;
+    top: -1rem; left: 1.5rem;
+    color: rgba(82,183,136,0.25);
+    line-height: 1;
+  }
+  .science-quote p {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+  }
+  .science-quote .credit { font-size: 0.82rem; color: var(--green-light); }
+  .output-pills { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 2rem; }
+  .pill {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .pill-green { background: rgba(76,175,80,0.15); color: #4caf50; }
+  .pill-yellow { background: rgba(255,193,7,0.15); color: #f59e0b; }
+  .pill-red { background: rgba(244,67,54,0.15); color: #ef5350; }
 
-/* ══ FOOTER ══ */
-footer {
-  background:#060401;
-  border-top:1px solid rgba(240,232,220,0.04);
-  padding:4rem 2.5rem;
-  text-align:center;
-}
-.foot-logo {
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.8rem; font-weight:300;
-  color:#f0e8dc; margin-bottom:0.5rem;
-}
-.foot-logo em { color:#4ecb71; font-style:italic; }
-.foot-tag {
-  font-size:0.58rem; letter-spacing:0.3em;
-  color:rgba(240,232,220,0.2); text-transform:uppercase;
-}
-.foot-links {
-  margin-top:2rem; display:flex;
-  justify-content:center; gap:2.5rem; flex-wrap:wrap;
-}
-.foot-links a {
-  font-size:0.58rem; letter-spacing:0.2em;
-  color:rgba(240,232,220,0.2); text-decoration:none;
-  text-transform:uppercase; transition:color 0.3s;
-}
-.foot-links a:hover { color:#4ecb71; }
-.copy {
-  margin-top:2.5rem; font-size:0.52rem;
-  color:rgba(240,232,220,0.1);
-}
+  /* ── FUTURE ───────────────────────────────── */
+  .future { background: var(--white); }
+  .future-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.2rem; margin-top: 3rem; }
+  .future-item {
+    background: var(--cream);
+    border-radius: 16px;
+    padding: 1.4rem;
+    border: 1px solid rgba(82,183,136,0.12);
+    display: flex; align-items: center; gap: 0.8rem;
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    font-weight: 400;
+    transition: background 0.2s;
+  }
+  .future-item:hover { background: var(--green-pale); }
+  .future-item span:first-child { font-size: 1.3rem; }
 
-/* DIVIDER */
-.hr { width:100%; height:1px; background:linear-gradient(90deg,transparent,rgba(240,232,220,0.07),transparent); }
+  /* ── CTA ──────────────────────────────────── */
+  .cta-section {
+    background: var(--green-deep);
+    border-radius: 32px;
+    margin: 0 3vw 4rem;
+    padding: 6rem 6vw;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 80% at 50% 120%, rgba(82,183,136,0.25) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cta-section .section-label { color: var(--green-light); text-align: center; }
+  .cta-section h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    color: var(--white);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .cta-section p { color: rgba(255,255,255,0.65); font-size: 1rem; max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.7; }
+  .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary-inv {
+    background: var(--white);
+    color: var(--green-deep);
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 100px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .btn-primary-inv:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+  .btn-outline-inv {
+    background: transparent;
+    color: var(--white);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    padding: 0.9rem 2rem;
+    border-radius: 100px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: all 0.2s;
+  }
+  .btn-outline-inv:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.6); }
 
-/* REVEAL */
-.reveal { opacity:0; transform:translateY(22px); transition:opacity 0.45s ease,transform 0.45s ease; }
-.reveal.vis { opacity:1; transform:translateY(0); }
+  /* ── FOOTER ───────────────────────────────── */
+  footer {
+    padding: 2.5rem 6vw;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+    border-top: 1px solid rgba(82,183,136,0.15);
+  }
+  footer .logo { font-size: 1.2rem; }
+  footer p { font-size: 0.82rem; color: var(--text-light); }
 
-@media(max-width:800px) {
-  .sim-grid,.map-grid { grid-template-columns:1fr; gap:2.5rem; }
-  .hero-h1 { font-size:3.2rem; }
-  #rootCanvas { aspect-ratio:1/1; }
-}
+  /* ── RESPONSIVE ───────────────────────────── */
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; padding-top: 8rem; text-align: center; }
+    .hero p { margin-left: auto; margin-right: auto; }
+    .hero-buttons { justify-content: center; }
+    .hero-visual { display: none; }
+    .science { grid-template-columns: 1fr; gap: 3rem; }
+    nav .nav-links { display: none; }
+    .problem, .cta-section { margin: 0 1.5vw; }
+  }
 </style>
 </head>
 <body>
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-
 <!-- NAV -->
 <nav>
-  <div class="logo">Farmetric <em>RootScan</em></div>
-  <div class="nav-right">Soil Intelligence Platform</div>
+  <div class="logo">Ori<span>va</span></div>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#benefits">Benefits</a></li>
+    <li><a href="#contact" class="nav-cta">Get Started</a></li>
+  </ul>
 </nav>
 
-<!-- ══ HERO ══ -->
-<section id="hero">
-  <!-- Sky bg (CSS transition) -->
-  <div id="heroBg"></div>
-  <!-- Stars -->
-  <div id="starsLayer"></div>
-  <!-- Horizon glow -->
-  <div id="horizonGlow"></div>
-  <!-- Sun (DOM) -->
-  <div id="heroSun"></div>
-  <!-- Clouds (DOM, injected by JS) -->
-  <div id="cloudsLayer" style="position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;"></div>
-  <!-- Rain -->
-  <div id="rainLayer"></div>
-  <!-- Canvas — PLANTS ONLY -->
-  <canvas id="heroCanvas"></canvas>
+<!-- HERO -->
+<section class="hero">
   <div class="hero-text">
-    <div class="hero-eyebrow">Soil Intelligence Platform</div>
-    <h1 class="hero-h1">See What<br>Grows <em>Below</em></h1>
-    <p class="hero-sub">Real-time moisture intelligence<br>at every root depth</p>
+    <div class="hero-eyebrow">Smart Irrigation Assistant</div>
+    <h1>Know Your Soil.<br><em>Water Smarter.</em><br>Grow Better.</h1>
+    <p>Oriva is a portable smart irrigation assistant that tells farmers exactly when to irrigate and when to wait — using real-time soil data and intelligent predictions.</p>
+    <div class="hero-buttons">
+      <a href="#contact" class="btn-primary">🚀 Get Started</a>
+      <a href="#how" class="btn-secondary">📊 See How It Works</a>
+    </div>
   </div>
-  <div class="scroll-hint">Scroll to explore</div>
-  <div class="scene-label" id="sceneLabel">Morning — Clear</div>
+  <div class="hero-visual">
+    <div class="floating-tag tag1">🌡️ Temp: 28°C</div>
+    <div class="device-card">
+      <div class="device-icon">🌱</div>
+      <h3>Oriva Device</h3>
+      <p>Live soil status — Field A</p>
+      <div class="soil-bar-wrap">
+        <div class="soil-bar-label"><span>Depth 10cm</span><span>72%</span></div>
+        <div class="soil-bar"><div class="soil-bar-fill" style="width:72%"></div></div>
+      </div>
+      <div class="soil-bar-wrap">
+        <div class="soil-bar-label"><span>Depth 25cm</span><span>58%</span></div>
+        <div class="soil-bar"><div class="soil-bar-fill" style="width:58%"></div></div>
+      </div>
+      <div class="soil-bar-wrap">
+        <div class="soil-bar-label"><span>Depth 45cm</span><span>43%</span></div>
+        <div class="soil-bar"><div class="soil-bar-fill" style="width:43%"></div></div>
+      </div>
+      <div class="status-badge">
+        <span class="dot"></span>
+        No irrigation needed today
+      </div>
+    </div>
+    <div class="floating-tag tag2">💧 Next water: 2 days</div>
+  </div>
 </section>
 
-<div class="hr"></div>
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="section-label">The Challenge</div>
+  <h2 class="section-title">The Hidden Problem<br>in Farming</h2>
+  <p class="section-sub">Most farmers irrigate based on guesswork, routine, or visual signs. This leads to water waste, crop stress, and lost income — all without knowing it.</p>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="icon">💸</div>
+      <h4>Water Wasted</h4>
+      <p>Unnecessary irrigation drains resources and raises costs without any benefit to the crop.</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🌾</div>
+      <h4>Crop Stress</h4>
+      <p>Delaying water when crops need it damages yield quality and quantity at harvest.</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">📍</div>
+      <h4>Uneven Soil</h4>
+      <p>Soil moisture varies across a field — one-point guesses leave patches dry or over-watered.</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">☁️</div>
+      <h4>Weather Ignored</h4>
+      <p>Daily weather changes affect water loss, but irrigation schedules stay the same.</p>
+    </div>
+  </div>
+  <div class="problem-footer">
+    👉 This leads to lower yield, higher costs, and avoidable water loss — every single season.
+  </div>
+</section>
 
-<!-- ══ SOIL SIMULATOR ══ -->
-<section id="sim-section" class="section section-bg-dark">
-  <div class="section-inner">
-    <div class="sim-grid">
-      <div class="reveal">
-        <canvas id="soilCanvas"></canvas>
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="section-label">Process</div>
+    <h2 class="section-title">How Oriva Works</h2>
+    <p class="section-sub">Five intelligent steps — from probe to prediction — so you always know exactly what your field needs.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Insert the Probe</h4>
+          <p>Push Oriva into your soil. It instantly measures moisture levels at multiple depths — getting the full picture, not just the surface.</p>
+          <div class="step-tags"><span class="step-tag">Multi-depth sensing</span><span class="step-tag">Plug & measure</span></div>
+        </div>
       </div>
-      <div class="sim-status reveal">
-        <div class="section-tag">Live Simulation</div>
-        <div class="status-scenario" id="scenTag">Scenario 1 of 3</div>
-        <h2 class="status-headline" id="scenHead">Optimal Irrigation</h2>
-        <p class="status-body" id="scenBody">Water distributes evenly through the root zone. Roots glow with health — dense lateral growth signals maximum nutrient absorption and yield potential.</p>
-        <div class="moisture-readout">
-          <div class="mread-row">
-            <div class="mread-label">Surface</div>
-            <div class="mread-track"><div class="mread-fill" id="mf0" style="width:60%;background:#4ecb71;"></div></div>
-            <div class="mread-val" id="mv0">60%</div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Collect Environmental Data</h4>
+          <p>Simultaneously reads surrounding conditions: air temperature, humidity, and light intensity in real time.</p>
+          <div class="step-tags"><span class="step-tag">Temperature</span><span class="step-tag">Humidity</span><span class="step-tag">Light intensity</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Smart Calculation</h4>
+          <p>Runs the scientifically validated ET₀ evapotranspiration model, adjusted for your specific crop type using the Kc coefficient.</p>
+          <div class="step-tags"><span class="step-tag">ET₀ Model</span><span class="step-tag">Crop factor (Kc)</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Prediction Engine</h4>
+          <p>Calculates how fast water will be lost from the soil over the coming days — accounting for weather, crop stage, and current reserves.</p>
+          <div class="step-tags"><span class="step-tag">Water balance tracking</span><span class="step-tag">Depletion forecast</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Clear Decision Output</h4>
+          <p>Oriva gives you a simple, actionable result — no graphs, no guessing, no expertise needed.</p>
+          <div class="output-pills" style="margin-top:0.8rem">
+            <div class="pill pill-green">✅ No irrigation needed today</div>
+            <div class="pill pill-yellow">⏳ Irrigate after 2 days</div>
+            <div class="pill pill-red">⚠️ Water now</div>
           </div>
-          <div class="mread-row">
-            <div class="mread-label">Root Zone</div>
-            <div class="mread-track"><div class="mread-fill" id="mf1" style="width:65%;background:#4ecb71;"></div></div>
-            <div class="mread-val" id="mv1">65%</div>
-          </div>
-          <div class="mread-row">
-            <div class="mread-label">Deep Soil</div>
-            <div class="mread-track"><div class="mread-fill" id="mf2" style="width:40%;background:#4ecb71;"></div></div>
-            <div class="mread-val" id="mv2">40%</div>
-          </div>
-        </div>
-        <div class="scenario-dots" id="scenDots">
-          <div class="sdot active" id="sd0"></div>
-          <div class="sdot" id="sd1"></div>
-          <div class="sdot" id="sd2"></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="hr"></div>
+<!-- COMPARISON -->
+<section class="compare" id="compare">
+  <div class="section-label">Differentiation</div>
+  <h2 class="section-title">Beyond Traditional<br>Soil Sensors</h2>
+  <p class="section-sub">Most sensors tell you what's happening. Oriva tells you what to do — and what's about to happen.</p>
+  <div class="compare-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Traditional Method</th>
+          <th>🌱 Oriva</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Single-point surface reading</td><td>Multi-depth sensing across root zone</td></tr>
+        <tr><td>Only shows current moisture</td><td>Predicts future water need & timing</td></tr>
+        <tr><td>Manual judgment required</td><td>Automatic, clear decision output</td></tr>
+        <tr><td>Static irrigation schedule</td><td>Adaptive, daily-updated recommendations</td></tr>
+        <tr><td>Ignores weather & crop stage</td><td>Integrates ET₀ model + crop factor</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-<!-- ══ FIELD MAP ══ -->
-<section id="map-section" class="section section-bg-mid">
-  <div class="section-inner">
-    <div class="map-grid">
-      <div class="sim-status reveal">
-        <div class="section-tag">Field Intelligence</div>
-        <h2 class="section-h2">Your Field,<br><em>Revealed</em></h2>
-        <p class="section-p">Every zone holds different moisture. RootScan maps the invisible — identifying dry patches before they become yield losses.</p>
-        <div class="map-legend-block">
-          <div class="legend-row"><div class="legend-swatch" style="background:#3ab5e8;"></div><div class="legend-text">Oversaturated</div></div>
-          <div class="legend-row"><div class="legend-swatch" style="background:#4ecb71;"></div><div class="legend-text">Optimal moisture</div></div>
-          <div class="legend-row"><div class="legend-swatch" style="background:#c8a84b;"></div><div class="legend-text">Drying out</div></div>
-          <div class="legend-row"><div class="legend-swatch" style="background:#e85d3a;"></div><div class="legend-text">Critical — irrigate</div></div>
-        </div>
-        <div class="probe-status">
-          <div class="probe-status-label">Live Reading</div>
-          <div class="probe-status-val" id="probeStatusVal">Scanning field zone A-4...</div>
+<!-- BENEFITS -->
+<section class="benefits" id="benefits">
+  <div class="section-label">For Farmers</div>
+  <h2 class="section-title">Built for Real Fields,<br>Real Farmers</h2>
+  <p class="section-sub">Designed to be picked up and used — without training, dashboards, or complicated setup.</p>
+  <div class="benefits-grid">
+    <div class="benefit-card">
+      <div class="benefit-icon">💧</div>
+      <h4>Saves Water</h4>
+      <p>Stop irrigating when soil has enough. Use every drop where it counts.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🌾</div>
+      <h4>Improves Crop Yield</h4>
+      <p>Precise watering reduces crop stress and supports healthy, consistent growth.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">⏱️</div>
+      <h4>Saves Time</h4>
+      <p>No more walking the entire field to guess. One probe, instant answer.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">📍</div>
+      <h4>Fully Portable</h4>
+      <p>Lightweight and wireless. Use it in any field, any crop, any day.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">📅</div>
+      <h4>Daily or Weekly Use</h4>
+      <p>Works on your schedule — check daily for precision or weekly for planning.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🔋</div>
+      <h4>Low Maintenance</h4>
+      <p>No complex installation, no ongoing calibration. Insert and know.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SCIENCE -->
+<section class="science" id="science">
+  <div>
+    <div class="section-label">Intelligence</div>
+    <h2 class="section-title">Science +<br>Simplicity</h2>
+    <p class="section-sub">Oriva runs sophisticated agricultural science under the hood — so you don't have to.</p>
+    <div class="science-list">
+      <div class="sci-item">
+        <div class="sci-icon">📐</div>
+        <div>
+          <h5>Evapotranspiration Modeling (ET₀)</h5>
+          <p>FAO Penman-Monteith method — the global standard for crop water calculation.</p>
         </div>
       </div>
-      <div class="reveal">
-        <canvas id="fieldCanvas"></canvas>
+      <div class="sci-item">
+        <div class="sci-icon">⚖️</div>
+        <div>
+          <h5>Soil Water Balance Tracking</h5>
+          <p>Tracks the complete water budget: what's in the soil, what's lost, what remains.</p>
+        </div>
+      </div>
+      <div class="sci-item">
+        <div class="sci-icon">🌡️</div>
+        <div>
+          <h5>Real-Time Environmental Sensing</h5>
+          <p>Temperature, humidity, and light intensity feed into every calculation live.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="science-quote">
+    <p>"Not just how much water is in the soil… but how long it will last."</p>
+    <p class="credit">— The Oriva Principle</p>
+    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.12);">
+      <p style="font-size:0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 0.8rem;">For the farmer, it feels simple:</p>
+      <div style="background: rgba(255,255,255,0.1); border-radius: 14px; padding: 1rem 1.4rem; font-family: 'Fraunces', serif; font-size: 1.3rem; color: var(--green-light); font-style: italic;">
+        "Just insert and know."
       </div>
     </div>
   </div>
 </section>
 
-<div class="hr"></div>
-
-<!-- ══ ROOT SCIENCE ══ -->
-<section id="root-section" class="section section-bg-dark">
-  <div class="section-inner">
-    <div class="reveal">
-      <div class="section-tag">Root Science</div>
-      <h2 class="section-h2">How Roots<br><em>Respond</em></h2>
-      <p class="section-p">Moisture determines everything underground. Watch three fields side by side — same crop, three fates.</p>
-    </div>
-    <div class="root-cinematic reveal" style="margin-top:3rem;">
-      <canvas id="rootCanvas"></canvas>
-      <div class="root-caption">
-        <div class="root-cap-item">
-          <div class="rci-title" style="color:#e85d3a;">🔴 Drought Stress</div>
-          <div class="rci-body">Roots plunge deep chasing water. Growth is sparse, desperate. Yield lost.</div>
-        </div>
-        <div class="root-cap-item">
-          <div class="rci-title" style="color:#4ecb71;">🟢 Optimal Balance</div>
-          <div class="rci-body">Dense lateral network. Every root tip absorbs. Maximum yield achieved.</div>
-        </div>
-        <div class="root-cap-item">
-          <div class="rci-title" style="color:#3ab5e8;">🔵 Waterlogged</div>
-          <div class="rci-body">Oxygen starved. Root rot spreads. Despite water abundance — the plant drowns.</div>
-        </div>
-      </div>
-    </div>
+<!-- FUTURE -->
+<section class="future" id="future">
+  <div class="section-label">What's Coming</div>
+  <h2 class="section-title">Future Ready</h2>
+  <p class="section-sub">Oriva is built to grow. Upcoming features will connect your device to smarter tools and broader data.</p>
+  <div class="future-grid">
+    <div class="future-item"><span>📱</span><span>Mobile App Integration</span></div>
+    <div class="future-item"><span>🌤️</span><span>Weather Forecast Adjustment</span></div>
+    <div class="future-item"><span>🔊</span><span>Multi-Language Voice Output</span></div>
+    <div class="future-item"><span>📂</span><span>Field Data History Logs</span></div>
   </div>
 </section>
 
-<div class="hr"></div>
-
-<!-- ══ STATS ══ -->
-<section id="stats-section" class="section">
-  <div style="width:100%;">
-    <div class="stats-row reveal">
-      <div><div class="stat-n">40%</div><div class="stat-l">Water Saved</div></div>
-      <div><div class="stat-n">3×</div><div class="stat-l">Healthier Roots</div></div>
-      <div><div class="stat-n">6</div><div class="stat-l">Depth Readings</div></div>
-      <div><div class="stat-n">2s</div><div class="stat-l">Per Measurement</div></div>
-    </div>
+<!-- CTA -->
+<div class="cta-section" id="contact">
+  <div class="section-label">Take Action</div>
+  <h2>Stop Guessing.<br>Start Knowing.</h2>
+  <p>With Oriva, every drop of water is used wisely — and every decision is backed by data.</p>
+  <div class="cta-buttons">
+    <a href="#" class="btn-primary-inv">🌱 Try Oriva</a>
+    <a href="#" class="btn-outline-inv">📩 Contact Us</a>
   </div>
-</section>
-
-<div class="hr"></div>
+</div>
 
 <!-- FOOTER -->
 <footer>
-  <div class="foot-logo">Farmetric <em>RootScan</em></div>
-  <div class="foot-tag">Soil Intelligence for Smarter Farming</div>
-  <div class="foot-links">
-    <a href="#">Platform</a>
-    <a href="#">Research</a>
-    <a href="#">Farmers</a>
-    <a href="#">Investors</a>
-    <a href="#">Contact</a>
-  </div>
-  <div class="copy">© 2025 Farmetric Technologies</div>
+  <div class="logo">Ori<span>va</span></div>
+  <p>© 2025 Oriva. Smart Irrigation, Made Simple.</p>
+  <p style="font-size:0.78rem; color: var(--text-light);">Built for farmers. Backed by science.</p>
 </footer>
 
-<script>
-// ══════════════════════════════════════════════════
-// CURSOR
-// ══════════════════════════════════════════════════
-const cursor = document.getElementById('cursor');
-const cursorRing = document.getElementById('cursor-ring');
-let mx=0, my=0, rx=0, ry=0;
-document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
-function animCursor() {
-  rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
-  cursorRing.style.left=rx+'px'; cursorRing.style.top=ry+'px';
-  requestAnimationFrame(animCursor);
-}
-animCursor();
-
-// ══════════════════════════════════════════════════
-// SCROLL REVEAL
-// ══════════════════════════════════════════════════
-const revObs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis'); });
-}, {threshold:0.05});
-document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
-
-// ══════════════════════════════════════════════════
-// HERO — DOM Sun / Clouds / Rain + Canvas Plants
-// ══════════════════════════════════════════════════
-(function() {
-  const canvas = document.getElementById('heroCanvas');
-  const ctx = canvas.getContext('2d');
-  let W, H;
-  function resize() { W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight; }
-  resize();
-  window.addEventListener('resize', resize);
-
-  let t = 0;
-  const DAY_CYCLE = 40;
-
-  // ── DOM: Stars ──
-  const starsLayer = document.getElementById('starsLayer');
-  for(let i=0;i<160;i++) {
-    const s = document.createElement('div');
-    s.className='star-dot';
-    const sz=0.5+Math.random()*1.8;
-    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*55}%;animation-delay:${Math.random()*2}s;animation-duration:${1.5+Math.random()*2.5}s;`;
-    starsLayer.appendChild(s);
-  }
-
-  // ── DOM: Clouds ──
-  const cloudsLayer = document.getElementById('cloudsLayer');
-  const cloudDefs = [];
-  function spawnCloud(dark) {
-    const el = document.createElement('div');
-    el.className='hero-cloud';
-    const w=100+Math.random()*160, h=38+Math.random()*38;
-    const top=5+Math.random()*22;
-    const dur=18+Math.random()*18;
-    const delay=Math.random()*-dur;
-    const blur=4+Math.random()*5;
-    const col = dark ? `rgba(55,65,85,0.88)` : `rgba(220,228,238,0.82)`;
-    el.style.cssText=`width:${w}px;height:${h}px;top:${top}%;filter:blur(${blur}px);background:${col};animation-duration:${dur}s;animation-delay:${delay}s;`;
-    // Puff bumps using box-shadow
-    el.style.boxShadow=`${w*0.2}px -${h*0.3}px 0 ${h*0.15}px ${col}, ${w*0.5}px -${h*0.22}px 0 ${h*0.1}px ${col}, -${w*0.15}px -${h*0.18}px 0 ${h*0.08}px ${col}`;
-    cloudsLayer.appendChild(el);
-    return el;
-  }
-  // Spawn initial clouds
-  const cloudEls = [];
-  for(let i=0;i<7;i++) cloudEls.push(spawnCloud(false));
-
-  // ── DOM: Rain ──
-  const rainLayer = document.getElementById('rainLayer');
-  let rainTimer=null;
-  function startRain() {
-    if(rainTimer) return;
-    rainTimer = setInterval(()=>{
-      const drop=document.createElement('div');
-      drop.className='rain-drop-dom';
-      const dur=0.55+Math.random()*0.45;
-      const windOff=currentWindStr*40;
-      drop.style.cssText=`left:${Math.random()*105}%;height:${14+Math.random()*22}px;animation-duration:${dur}s;animation-delay:${Math.random()*0.2}s;top:-30px;transform:rotate(${windOff*0.5}deg);`;
-      rainLayer.appendChild(drop);
-      setTimeout(()=>drop.remove(),(dur+0.35)*1000);
-    },20);
-  }
-  function stopRain() { clearInterval(rainTimer); rainTimer=null; }
-
-  // ── Sky backgrounds ──
-  const skyStates = {
-    morning: 'linear-gradient(180deg,#0d2040 0%,#2a4a70 38%,#d4703a 62%,#3d2208 80%,#1a0f06 100%)',
-    afternoon: 'linear-gradient(180deg,#061428 0%,#0e2a55 30%,#1a5090 52%,#4090c0 68%,#1e4012 76%,#1a0f06 100%)',
-    evening: 'linear-gradient(180deg,#08101e 0%,#18204a 24%,#3a2858 44%,#b03828 60%,#c05522 70%,#3d2208 80%,#1a0f06 100%)',
-    night: 'linear-gradient(180deg,#020608 0%,#040a12 40%,#080f18 60%,#0d0b08 80%,#080502 100%)'
-  };
-
-  // Phase: morning(0)→afternoon(1)→evening(2)→night(3)→morning
-  const phases = ['morning','afternoon','evening','night'];
-  const phaseDurs = [10,12,10,8];
-  const weatherInPhase = [false, false, true, false]; // rain in afternoon phase
-  const windInPhase = [false, false, false, true]; // wind in night → morning transition
-  let phaseIdx=0, phaseTimer=0;
-  let currentWindStr=0;
-  let currentRaining=false;
-
-  function applyPhase(ph) {
-    const bg=document.getElementById('heroBg');
-    const sun=document.getElementById('heroSun');
-    const stars=document.getElementById('starsLayer');
-    const hglow=document.getElementById('horizonGlow');
-    const isNight=ph==='night';
-    const isMorning=ph==='morning';
-    const isEvening=ph==='evening';
-    const isAfternoon=ph==='afternoon';
-
-    // Sky
-    bg.style.background=skyStates[ph];
-
-    // Stars
-    stars.style.opacity=(isNight?'1':isMorning?'0.15':'0');
-
-    // Sun
-    if(isNight) {
-      sun.style.opacity='0';
-    } else if(isMorning) {
-      sun.style.top='14%'; sun.style.left='18%'; sun.style.opacity='0.85';
-      sun.style.boxShadow='0 0 50px 25px rgba(255,180,60,0.45),0 0 100px 50px rgba(255,140,30,0.18)';
-    } else if(isAfternoon) {
-      sun.style.top='9%'; sun.style.left='50%'; sun.style.opacity='1';
-      sun.style.boxShadow='0 0 70px 38px rgba(255,230,100,0.5),0 0 140px 70px rgba(255,200,50,0.2)';
-    } else if(isEvening) {
-      sun.style.top='52%'; sun.style.left='82%'; sun.style.opacity='0.75';
-      sun.style.boxShadow='0 0 80px 40px rgba(255,110,30,0.6),0 0 160px 80px rgba(220,80,20,0.25)';
-    }
-    // Horizon glow for golden hours
-    hglow.style.opacity=(isMorning||isEvening)?'1':'0';
-
-    // Clouds dark/light
-    const dark=(ph==='night'||ph==='afternoon');
-    cloudEls.forEach(el=>{
-      const col=dark?`rgba(55,65,85,0.88)`:`rgba(220,228,238,0.82)`;
-      el.style.background=col;
-      el.style.boxShadow=el.style.boxShadow.replace(/rgba\([^)]+\)/g, col);
-    });
-
-    // Rain
-    const doRain=(ph==='afternoon');
-    if(doRain && !currentRaining) { startRain(); currentRaining=true; }
-    else if(!doRain && currentRaining) { stopRain(); currentRaining=false; }
-
-    // Wind
-    const doWind=(ph==='night');
-    currentWindStr = doWind ? 1 : 0;
-
-    // Scene label
-    const label=document.getElementById('sceneLabel');
-    const wn = doRain?'Rain':doWind?'Wind':'Clear';
-    label.textContent = ph.charAt(0).toUpperCase()+ph.slice(1)+' — '+wn;
-  }
-
-  // Plants
-  const NUM_PLANTS = 58;
-  const plants = Array.from({length:NUM_PLANTS}, (_,i) => ({
-    x: (i/NUM_PLANTS)*1.06-0.03,
-    height: 0.09+Math.random()*0.055,
-    swayOffset: Math.random()*Math.PI*2,
-    swayAmp: 0.011+Math.random()*0.011,
-    tiller: 1+Math.floor(Math.random()*3),
-    headSize: 0.55+Math.random()*0.45,
-    leafLen: 0.038+Math.random()*0.028,
-    greenShift: Math.random()*18,
-  }));
-
-  function drawPlant(p, windBlow, phase) {
-    const baseX=p.x*W;
-    const groundY=H*0.625;
-    const plantH=p.height*H;
-    const sway=Math.sin(t*1.5+p.swayOffset)*p.swayAmp*(1+windBlow*3.5)*W;
-    const isNight=phase==='night';
-    const gl=isNight?0.25:phase==='afternoon'?0.9:phase==='morning'?0.7:0.55;
-    const rr=Math.round(38+28*gl+p.greenShift);
-    const gg=Math.round(85+72*gl);
-    const bb=Math.round(18+12*gl);
-
-    for(let tl=0;tl<=p.tiller;tl++){
-      const tx=baseX+(tl-p.tiller/2)*3.5;
-      const ts=sway*(0.7+tl*0.15);
-      const th=plantH*(tl===0?1:0.68+Math.random()*0.22);
-      const tp=p.swayOffset+tl*0.8;
-      const tipX=tx+ts, tipY=groundY-th;
-      ctx.beginPath();
-      ctx.moveTo(tx,groundY);
-      ctx.bezierCurveTo(tx+ts*0.3,groundY-th*0.4,tx+ts*0.7,groundY-th*0.8,tipX,tipY);
-      ctx.strokeStyle=`rgb(${rr},${gg},${bb})`;
-      ctx.lineWidth=tl===0?2.2:1.4; ctx.stroke();
-      // Leaves
-      for(let lf=0;lf<2;lf++){
-        const lfFrac=0.3+lf*0.24;
-        const lfX=tx+ts*lfFrac, lfY=groundY-th*lfFrac;
-        const lfDir=lf%2===0?1:-1;
-        const lfLen=p.leafLen*W*(0.8+Math.sin(t+p.swayOffset+lf)*0.2);
-        const lfAng=-0.3+lfDir*0.78+Math.sin(t*1.3+p.swayOffset)*0.1*(1+windBlow);
-        ctx.beginPath(); ctx.moveTo(lfX,lfY);
-        const lcpx=lfX+Math.cos(lfAng)*lfLen*0.6;
-        const lcpy=lfY+Math.sin(lfAng)*lfLen*0.6-lfLen*0.42;
-        ctx.quadraticCurveTo(lcpx,lcpy,lfX+Math.cos(lfAng+0.3)*lfLen,lfY+Math.sin(lfAng+0.3)*lfLen*0.5-lfLen*0.22);
-        ctx.strokeStyle=`rgba(${rr-5},${gg+14},${bb},0.72)`;
-        ctx.lineWidth=1.2; ctx.stroke();
-      }
-      // Head
-      const headH=0.044*H*p.headSize;
-      const hs=Math.sin(t*1.5+tp)*0.007*W*(1+windBlow*2);
-      for(let sp=-3;sp<=3;sp++){
-        const sa=sp*0.11+Math.sin(t+tp)*0.04;
-        const sl=headH*(0.38+(3-Math.abs(sp))*0.09);
-        ctx.beginPath();
-        ctx.moveTo(tipX+hs,tipY);
-        ctx.lineTo(tipX+Math.sin(sa)*sl*0.38+hs,tipY-sl+Math.cos(sa)*sl*0.08);
-        ctx.strokeStyle=`rgb(${175+sp*2},${138-sp*2},${38+sp})`;
-        ctx.lineWidth=0.95; ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(tipX+Math.sin(sa)*sl*0.38+hs,tipY-sl*0.78,1.15,0,Math.PI*2);
-        ctx.fillStyle=`rgb(188,142,42)`; ctx.fill();
-      }
-      ctx.beginPath();
-      ctx.moveTo(tipX+hs,tipY-headH*0.88);
-      ctx.lineTo(tipX+hs+Math.sin(t*1.8+tp)*1.8*(1+windBlow),tipY-headH*1.38);
-      ctx.strokeStyle=`rgba(198,158,48,0.55)`; ctx.lineWidth=0.65; ctx.stroke();
-    }
-  }
-
-  let lastTime=null;
-  applyPhase(phases[0]);
-
-  function render(now) {
-    if(!lastTime) lastTime=now;
-    const dt=(now-lastTime)/1000; lastTime=now;
-    t+=dt;
-
-    // Phase advance
-    phaseTimer+=dt;
-    if(phaseTimer>phaseDurs[phaseIdx]) {
-      phaseTimer=0; phaseIdx=(phaseIdx+1)%phases.length;
-      applyPhase(phases[phaseIdx]);
-    }
-    // Wind ramp
-    const targetWind=phases[phaseIdx]==='night'?0.8:0;
-    currentWindStr+=(targetWind-currentWindStr)*dt*1.5;
-
-    // Clear canvas (transparent — sky is behind via DOM)
-    ctx.clearRect(0,0,W,H);
-
-    // Ground
-    const gGrad=ctx.createLinearGradient(0,H*0.605,0,H);
-    gGrad.addColorStop(0,'#1e3a10'); gGrad.addColorStop(0.04,'#162e0c');
-    gGrad.addColorStop(0.1,'#3d2208'); gGrad.addColorStop(0.5,'#2a1505');
-    gGrad.addColorStop(1,'#160a02');
-    ctx.fillStyle=gGrad; ctx.fillRect(0,H*0.605,W,H*0.395);
-    // Grass strip
-    const gStrip=ctx.createLinearGradient(0,H*0.598,0,H*0.645);
-    gStrip.addColorStop(0,'rgba(32,74,14,0.95)'); gStrip.addColorStop(1,'rgba(20,55,8,0)');
-    ctx.fillStyle=gStrip; ctx.fillRect(0,H*0.598,W,H*0.047);
-
-    // Plants
-    plants.forEach(p=>drawPlant(p,currentWindStr,phases[phaseIdx]));
-
-    // Vignette
-    const vg=ctx.createRadialGradient(W/2,H/2,H*0.18,W/2,H/2,H*0.88);
-    vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.52)');
-    ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
-
-    requestAnimationFrame(render);
-  }
-  requestAnimationFrame(render);
-})();
-
-// ══════════════════════════════════════════════════
-// SOIL CANVAS — Cinematic auto-playing soil scenarios
-// ══════════════════════════════════════════════════
-(function() {
-  const canvas = document.getElementById('soilCanvas');
-  const ctx = canvas.getContext('2d');
-  let W, H;
-  function resize() {
-    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
-    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
-    ctx.scale(devicePixelRatio,devicePixelRatio);
-    W /= devicePixelRatio; H /= devicePixelRatio;
-  }
-  resize(); window.addEventListener('resize',resize);
-
-  const scenarios = [
-    {
-      name:'Scenario 1 of 3', head:'Optimal Irrigation',
-      body:'Water distributes evenly through the root zone. Roots glow with health — dense lateral growth signals maximum nutrient absorption and yield potential.',
-      moisture:[60,65,40], rootColor:'#4ecb71', moistureColor:'#4ecb71',
-      waterLevel:0.65, rootDensity:1.0, rootDepth:0.55
-    },
-    {
-      name:'Scenario 2 of 3', head:'Drought Stress',
-      body:'Moisture has depleted. Roots plunge desperately downward searching for water. Lateral network collapses. The plant is under severe stress.',
-      moisture:[8,12,5], rootColor:'#e85d3a', moistureColor:'#e85d3a',
-      waterLevel:0.08, rootDensity:0.25, rootDepth:0.88
-    },
-    {
-      name:'Scenario 3 of 3', head:'Waterlogged Soil',
-      body:'Irrigation exceeded capacity. Oxygen is blocked. Root rot begins spreading from the base. Despite water abundance, the plant is suffocating.',
-      moisture:[95,98,92], rootColor:'#e87a5a', moistureColor:'#3ab5e8',
-      waterLevel:0.95, rootDensity:0.2, rootDepth:0.28
-    }
-  ];
-
-  let scenIdx = 0;
-  let transProgress = 0; // 0-1 transition
-  let holdTimer = 0;
-  const HOLD_TIME = 6; // seconds per scenario
-  const TRANS_TIME = 2;
-  let lastTime = null;
-  let inTransition = false;
-  let nextScen = null;
-  let prevScen = null;
-
-  // Root system
-  function generateRoots(scenario, seed) {
-    const roots = [];
-    const cx = W*0.5, baseY = H*0.19;
-    const depth = H * scenario.rootDepth;
-    const density = scenario.rootDensity;
-    const rng = (n) => { let x=Math.sin(seed+n)*10000; return x-Math.floor(x); };
-
-    // Main taproot
-    roots.push({type:'main', x1:cx, y1:baseY, x2:cx, y2:baseY+depth, w:3});
-
-    const numLat = Math.floor(density*14) + 2;
-    for(let i=0;i<numLat;i++) {
-      const frac = (i+1)/(numLat+1);
-      const y = baseY + depth*frac * (scenario.rootDepth < 0.4 ? 1 : 0.85);
-      const dir = i%2===0 ? -1 : 1;
-      const spread = (W*0.32)*density*(0.5+rng(i+100)*0.5);
-      const ex = cx + dir*spread;
-      const ey = y + H*0.05*(0.5+rng(i+200)*0.5);
-      const cp1x = cx+dir*spread*0.3, cp1y = y+H*0.02;
-      const cp2x = cx+dir*spread*0.7, cp2y = ey-H*0.02;
-      roots.push({type:'lateral',x1:cx,y1:y,cp1x,cp1y,cp2x,cp2y,x2:ex,y2:ey,
-        w:1.5*(0.4+density*0.6)});
-      if(density>0.5) {
-        const nfine = Math.floor(density*4);
-        for(let j=0;j<nfine;j++) {
-          const fx = ex+(rng(i*10+j)-0.5)*W*0.12;
-          const fy = ey+rng(i*10+j+50)*H*0.06;
-          roots.push({type:'fine',x1:ex,y1:ey,x2:fx,y2:fy,w:0.5});
-        }
-      }
-    }
-    return roots;
-  }
-
-  // Water particles
-  function createParticles(scenario) {
-    const n = Math.floor(scenario.waterLevel*80);
-    return Array.from({length:n}, ()=>({
-      x: Math.random()*W, y: H*0.19+Math.random()*H*0.72,
-      vx:(Math.random()-.5)*8, vy:(Math.random()-.5)*8,
-      r: 2+Math.random()*3.5,
-      life: Math.random(), speed: 0.3+Math.random()*0.7
-    }));
-  }
-
-  let curRoots = generateRoots(scenarios[0], 42);
-  let curParticles = createParticles(scenarios[0]);
-  let nextRoots = null, nextParticles = null;
-
-  function lerp(a,b,t){return a+(b-a)*t;}
-  function easeInOut(t){return t<0.5?2*t*t:1-2*(1-t)*(1-t);}
-
-  function drawSoilScene(scen, roots, particles, alpha, animT) {
-    ctx.save();
-    ctx.globalAlpha = alpha;
-
-    // Background — soil layers
-    const layerColors = [
-      {y:0,h:0.09,c:'#87b8d0'},   // sky reflected
-      {y:0.09,h:0.02,c:'#2d5a1b'}, // grass
-      {y:0.11,h:0.08,c:'#5c3317'}, // topsoil
-      {y:0.19,h:0.35,c:'#3d2208'}, // root zone
-      {y:0.54,h:0.46,c:'#2a1505'}, // deep
-    ];
-    layerColors.forEach(l => {
-      ctx.fillStyle=l.c;
-      ctx.fillRect(0,l.y*H,W,l.h*H+1);
-    });
-
-    // Soil texture dots
-    ctx.save();
-    ctx.globalAlpha *= 0.3;
-    for(let i=0;i<60;i++) {
-      const tx=(i*137.5%1)*W, ty=H*0.12+((i*91.3)%1)*H*0.82;
-      ctx.beginPath();
-      ctx.arc(tx,ty,0.8+Math.random()*1.2,0,Math.PI*2);
-      ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fill();
-    }
-    ctx.restore();
-
-    // Water/moisture overlay
-    const waterAlpha = scen.waterLevel * 0.45;
-    if(waterAlpha>0.01) {
-      const wg = ctx.createLinearGradient(0,H*0.19,0,H);
-      const wc = scen.waterLevel>0.75 ? '58,181,232' : scen.waterLevel>0.3 ? '78,203,113' : '200,100,50';
-      wg.addColorStop(0,`rgba(${wc},0)`);
-      wg.addColorStop(0.3,`rgba(${wc},${waterAlpha})`);
-      wg.addColorStop(0.7,`rgba(${wc},${waterAlpha*0.8})`);
-      wg.addColorStop(1,`rgba(${wc},0.1)`);
-      ctx.fillStyle=wg;
-      ctx.fillRect(0,H*0.1,W,H*0.9);
-    }
-
-    // Water particles
-    particles.forEach(p => {
-      p.life += 0.008 * p.speed;
-      if(p.life>1) p.life=0;
-      const pa = Math.sin(p.life*Math.PI)*0.7*scen.waterLevel;
-      ctx.beginPath();
-      ctx.arc(p.x+Math.sin(p.life*3)*5, p.y+Math.cos(p.life*2)*3, p.r,0,Math.PI*2);
-      const wc2 = scen.waterLevel>0.75?'58,181,232':scen.waterLevel>0.3?'78,203,113':'232,93,58';
-      ctx.fillStyle=`rgba(${wc2},${pa*0.6})`;
-      ctx.fill();
-    });
-
-    // Probe animation
-    const probeAnim = (animT % 8) / 8;
-    if(probeAnim > 0.05) {
-      const pProgress = Math.min(1, (probeAnim-0.05)/0.35);
-      const pRetract = probeAnim > 0.7 ? Math.max(0, 1-(probeAnim-0.7)/0.2) : 1;
-      const probeH = H*0.72*pProgress*pRetract;
-      const px = W*0.5;
-      const py = H*0.08;
-      // Probe rod
-      const pGrad = ctx.createLinearGradient(px-3,py,px+3,py);
-      pGrad.addColorStop(0,'#8b7234');
-      pGrad.addColorStop(0.5,'#c8a84b');
-      pGrad.addColorStop(1,'#8b7234');
-      ctx.fillStyle=pGrad;
-      ctx.fillRect(px-2.5,py,5,probeH);
-      // Tip
-      ctx.beginPath();
-      ctx.moveTo(px-4,py+probeH);
-      ctx.lineTo(px+4,py+probeH);
-      ctx.lineTo(px,py+probeH+8);
-      ctx.closePath();
-      ctx.fillStyle='#8b7234'; ctx.fill();
-      // Sensor rings
-      if(probeAnim>0.35 && probeAnim<0.7) {
-        const ringT = ((probeAnim-0.35)/0.35);
-        const numRings = 5;
-        for(let ri=0;ri<numRings;ri++) {
-          const ry2 = py + H*0.15 + ri*(H*0.12);
-          const rLife = (ringT*numRings - ri)%1;
-          if(rLife>0 && rLife<1) {
-            const rr = rLife*40;
-            const ra = Math.sin(rLife*Math.PI)*0.6;
-            ctx.beginPath();
-            ctx.arc(px, ry2, rr, 0, Math.PI*2);
-            ctx.strokeStyle=`rgba(200,168,75,${ra})`;
-            ctx.lineWidth=1.5; ctx.stroke();
-            // Reading dot
-            ctx.beginPath();
-            ctx.arc(px, ry2, 3, 0, Math.PI*2);
-            ctx.fillStyle=`rgba(200,168,75,0.9)`; ctx.fill();
-          }
-        }
-      }
-    }
-
-    // ROOTS
-    ctx.save();
-    roots.forEach(r => {
-      const glow = scen.rootDensity > 0.6;
-      if(glow) {
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = scen.rootColor;
-      } else {
-        ctx.shadowBlur = 0;
-      }
-      ctx.strokeStyle = scen.rootColor;
-      ctx.lineWidth = r.w;
-      ctx.beginPath();
-      if(r.type==='main') {
-        ctx.moveTo(r.x1,r.y1); ctx.lineTo(r.x2,r.y2);
-      } else if(r.type==='lateral') {
-        ctx.moveTo(r.x1,r.y1);
-        ctx.bezierCurveTo(r.cp1x,r.cp1y,r.cp2x,r.cp2y,r.x2,r.y2);
-      } else {
-        ctx.moveTo(r.x1,r.y1); ctx.lineTo(r.x2,r.y2);
-        ctx.globalAlpha = alpha*0.45;
-      }
-      ctx.stroke();
-      ctx.globalAlpha = alpha;
-    });
-    ctx.restore();
-
-    // Layer labels
-    const layerLabels = [
-      {y:0.1,label:'Surface'},
-      {y:0.19,label:'Topsoil'},
-      {y:0.33,label:'Root Zone'},
-      {y:0.6,label:'Deep Soil'},
-    ];
-    ctx.fillStyle='rgba(240,232,220,0.28)';
-    ctx.font=`300 ${W*0.025}px 'DM Mono',monospace`;
-    layerLabels.forEach(l => {
-      ctx.fillText(l.label, W*0.03, l.y*H + 14);
-    });
-
-    // Moisture % on side
-    ctx.fillStyle=`rgba(240,232,220,0.2)`;
-    ctx.font=`300 ${W*0.022}px 'DM Mono',monospace`;
-    ctx.fillText(`${Math.round(scen.moisture[1])}%`, W*0.85, H*0.37);
-
-    ctx.restore();
-  }
-
-  function render(now) {
-    if(!lastTime) lastTime=now;
-    const dt = (now-lastTime)/1000; lastTime=now;
-
-    // Clear with resize
-    if(canvas.offsetWidth*devicePixelRatio !== W*devicePixelRatio) resize();
-    ctx.clearRect(0,0,W,H);
-
-    if(!inTransition) {
-      holdTimer += dt;
-      drawSoilScene(scenarios[scenIdx], curRoots, curParticles, 1, holdTimer);
-      if(holdTimer > HOLD_TIME) {
-        inTransition=true; transProgress=0;
-        const ni = (scenIdx+1)%scenarios.length;
-        nextScen=scenarios[ni]; prevScen=scenarios[scenIdx];
-        nextRoots=generateRoots(nextScen, ni*100+Math.random()*50);
-        nextParticles=createParticles(nextScen);
-      }
-    } else {
-      transProgress += dt/TRANS_TIME;
-      if(transProgress>=1) {
-        transProgress=1; inTransition=false; holdTimer=0;
-        scenIdx=(scenIdx+1)%scenarios.length;
-        curRoots=nextRoots; curParticles=nextParticles;
-        nextRoots=null; nextParticles=null;
-        prevScen=null; nextScen=null;
-        updateScenarioUI(scenarios[scenIdx]);
-      } else {
-        const e = easeInOut(transProgress);
-        drawSoilScene(prevScen, curRoots, curParticles, 1-e, holdTimer);
-        drawSoilScene(nextScen, nextRoots, nextParticles, e, 0);
-        if(transProgress>0.5) updateScenarioUI(nextScen);
-      }
-    }
-
-    requestAnimationFrame(render);
-  }
-  requestAnimationFrame(render);
-
-  function updateScenarioUI(scen) {
-    document.getElementById('scenTag').textContent = scen.name;
-    document.getElementById('scenHead').textContent = scen.head;
-    document.getElementById('scenBody').textContent = scen.body;
-    const mc = scen.moistureColor;
-    ['mf0','mf1','mf2'].forEach((id,i)=>{
-      const el = document.getElementById(id);
-      el.style.width = scen.moisture[i]+'%';
-      el.style.background = mc;
-    });
-    ['mv0','mv1','mv2'].forEach((id,i)=>{
-      document.getElementById(id).textContent = scen.moisture[i]+'%';
-    });
-    document.querySelectorAll('.sdot').forEach((d,i)=>{
-      d.classList.toggle('active', i===scenIdx);
-    });
-  }
-
-  updateScenarioUI(scenarios[0]);
-})();
-
-// ══════════════════════════════════════════════════
-// FIELD MAP CANVAS — Auto-scanning animation
-// ══════════════════════════════════════════════════
-(function() {
-  const canvas = document.getElementById('fieldCanvas');
-  const ctx = canvas.getContext('2d');
-  let W, H;
-  function resize() {
-    W=canvas.width=canvas.offsetWidth*devicePixelRatio;
-    H=canvas.height=canvas.offsetHeight*devicePixelRatio;
-    ctx.scale(devicePixelRatio,devicePixelRatio);
-    W/=devicePixelRatio; H/=devicePixelRatio;
-  }
-  resize(); window.addEventListener('resize',resize);
-
-  const COLS=12, ROWS=8;
-  const PAD = 18;
-  const pattern = [
-    [null,null,32,38,44,48,46,40,34,null,null,null],
-    [null,30,42,54,62,68,66,58,46,36,null,null],
-    [24,36,50,64,74,80,78,70,58,44,32,null],
-    [20,32,46,60,72,78,76,66,54,40,28,18],
-    [16,28,40,54,64,70,68,60,48,36,24,14],
-    [12,22,34,46,56,62,58,50,40,30,18,10],
-    [null,15,26,38,48,54,50,42,32,22,12,null],
-    [null,null,18,28,36,40,38,30,22,null,null,null],
-  ];
-
-  const cells = [];
-  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
-    const bm = pattern[r][c];
-    if(bm!==null) {
-      const m = Math.max(4,Math.min(95,bm+(Math.random()-.5)*8));
-      cells.push({r,c,m,revealed:false,scanProgress:0,probeAnim:0,isProbing:false});
-    }
-  }
-
-  const cellW = (canvas.offsetWidth-PAD*2)/COLS;
-  const cellH = (canvas.offsetHeight-PAD*2)/ROWS;
-
-  function mColor(m,alpha=1) {
-    if(m<22) return `rgba(232,93,58,${alpha})`;
-    if(m<44) return `rgba(200,168,75,${alpha})`;
-    if(m<66) return `rgba(78,203,113,${alpha})`;
-    return `rgba(58,181,232,${alpha})`;
-  }
-
-  // Scan sequence
-  let scanTimer=0, scanCellIdx=0, lastTime=null;
-  const SCAN_INTERVAL=0.8, SCAN_DUR=0.6;
-  let probePos={x:W/2,y:H/2}, probeTarget={x:W/2,y:H/2};
-  let probeAlpha=0, probeRingT=0;
-  let scanReadingTimer=0;
-  let currentReadingCell=null;
-  const readingMessages = [
-    'Moisture at 34cm: 72% — Optimal',
-    'Root zone saturation: Critical',
-    'Scanning zone B-7... 38% — Drying',
-    'Depth reading: 50cm — 28% Dry',
-    'Uploading to dashboard...',
-    'Zone A-4: 68% — Healthy roots',
-    'Alert: Zone C-9 below threshold',
-  ];
-  let readingMsgIdx=0;
-
-  function render(now) {
-    if(!lastTime) lastTime=now;
-    const dt=(now-lastTime)/1000; lastTime=now;
-    if(canvas.offsetWidth*devicePixelRatio!==W*devicePixelRatio) resize();
-
-    ctx.clearRect(0,0,W,H);
-    const cw=(W-PAD*2)/COLS, ch=(H-PAD*2)/ROWS;
-
-    // Scan timer
-    scanTimer+=dt;
-    if(scanTimer>SCAN_INTERVAL && scanCellIdx<cells.length) {
-      scanTimer=0;
-      const cell=cells[scanCellIdx];
-      cell.isProbing=true;
-      probeTarget={x:PAD+cell.c*cw+cw/2, y:PAD+cell.r*ch+ch/2};
-      currentReadingCell=cell;
-      scanCellIdx++;
-      if(scanCellIdx>=cells.length) { setTimeout(()=>{scanCellIdx=0;cells.forEach(c=>{c.revealed=false;c.scanProgress=0;c.isProbing=false;});},3000); }
-    }
-
-    // Animate probe movement
-    probePos.x+=(probeTarget.x-probePos.x)*dt*5;
-    probePos.y+=(probeTarget.y-probePos.y)*dt*5;
-
-    // Update cells
-    cells.forEach(cell=>{
-      if(cell.isProbing) {
-        cell.probeAnim+=dt*2.5;
-        if(cell.probeAnim>1) { cell.probeAnim=0; cell.isProbing=false; cell.revealed=true; cell.scanProgress=1; }
-      }
-      if(cell.revealed && cell.scanProgress<1) cell.scanProgress=Math.min(1,cell.scanProgress+dt*2);
-    });
-
-    // Draw cells
-    cells.forEach(cell=>{
-      const cx=PAD+cell.c*cw, cy=PAD+cell.r*ch;
-      const sp=cell.scanProgress;
-      // Unrevealed bg
-      ctx.fillStyle=`rgba(255,255,255,0.04)`;
-      ctx.beginPath();
-      ctx.roundRect(cx+1,cy+1,cw-2,ch-2,2);
-      ctx.fill();
-      // Revealed color
-      if(sp>0) {
-        ctx.fillStyle=mColor(cell.m, sp*0.75);
-        ctx.beginPath(); ctx.roundRect(cx+1,cy+1,cw-2,ch-2,2); ctx.fill();
-        // Moisture value text
-        if(sp>0.8) {
-          ctx.fillStyle=`rgba(240,232,220,${(sp-0.8)*5*0.6})`;
-          ctx.font=`300 ${Math.min(cw*0.28,10)}px 'DM Mono',monospace`;
-          ctx.textAlign='center'; ctx.textBaseline='middle';
-          ctx.fillText(Math.round(cell.m)+'%',cx+cw/2,cy+ch/2);
-        }
-      }
-      // Probe ring
-      if(cell.isProbing) {
-        const rings=3;
-        for(let ri=0;ri<rings;ri++) {
-          const rp=(cell.probeAnim+ri/rings)%1;
-          const rr=rp*Math.max(cw,ch)*0.8;
-          const ra=Math.sin(rp*Math.PI)*0.8;
-          ctx.beginPath();
-          ctx.arc(cx+cw/2,cy+ch/2,rr,0,Math.PI*2);
-          ctx.strokeStyle=`rgba(200,168,75,${ra})`;
-          ctx.lineWidth=1.5; ctx.stroke();
-        }
-        // Center dot
-        ctx.beginPath(); ctx.arc(cx+cw/2,cy+ch/2,3,0,Math.PI*2);
-        ctx.fillStyle='rgba(200,168,75,0.9)'; ctx.fill();
-      }
-    });
-    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
-
-    // Probe crosshair
-    if(currentReadingCell) {
-      probeAlpha=Math.min(1,probeAlpha+dt*3);
-    }
-    if(probeAlpha>0) {
-      const px=probePos.x, py=probePos.y;
-      const cr=12;
-      ctx.strokeStyle=`rgba(200,168,75,${probeAlpha*0.7})`;
-      ctx.lineWidth=1;
-      // Crosshair lines
-      ctx.beginPath(); ctx.moveTo(px-20,py); ctx.lineTo(px-cr,py); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(px+cr,py); ctx.lineTo(px+20,py); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(px,py-20); ctx.lineTo(px,py-cr); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(px,py+cr); ctx.lineTo(px,py+20); ctx.stroke();
-      ctx.beginPath(); ctx.arc(px,py,cr,0,Math.PI*2);
-      ctx.strokeStyle=`rgba(200,168,75,${probeAlpha*0.5})`; ctx.stroke();
-    }
-
-    // Scan line sweep
-    probeRingT+=dt*0.4;
-    const sweepX=(probeRingT%1)*W;
-    const sweepGrad=ctx.createLinearGradient(sweepX-30,0,sweepX+8,0);
-    sweepGrad.addColorStop(0,'rgba(78,203,113,0)');
-    sweepGrad.addColorStop(0.7,'rgba(78,203,113,0.06)');
-    sweepGrad.addColorStop(1,'rgba(78,203,113,0)');
-    ctx.fillStyle=sweepGrad;
-    ctx.fillRect(0,0,W,H);
-
-    // Border
-    ctx.strokeStyle='rgba(240,232,220,0.06)';
-    ctx.lineWidth=1;
-    ctx.strokeRect(0.5,0.5,W-1,H-1);
-
-    requestAnimationFrame(render);
-  }
-
-  // Update reading message
-  setInterval(()=>{
-    readingMsgIdx=(readingMsgIdx+1)%readingMessages.length;
-    document.getElementById('probeStatusVal').textContent=readingMessages[readingMsgIdx];
-  }, 1800);
-
-  requestAnimationFrame(render);
-})();
-
-// ══════════════════════════════════════════════════
-// ROOT CANVAS — Side-by-side cinematic root growth
-// ══════════════════════════════════════════════════
-(function() {
-  const canvas = document.getElementById('rootCanvas');
-  const ctx = canvas.getContext('2d');
-  let W, H;
-  function resize() {
-    W=canvas.width=canvas.offsetWidth*devicePixelRatio;
-    H=canvas.height=canvas.offsetHeight*devicePixelRatio;
-    ctx.scale(devicePixelRatio,devicePixelRatio);
-    W/=devicePixelRatio; H/=devicePixelRatio;
-  }
-  resize(); window.addEventListener('resize',resize);
-
-  const panels = [
-    { label:'Drought Stress', color:'#e85d3a', waterLevel:0.05, rootDepth:0.88, density:0.18 },
-    { label:'Optimal Balance', color:'#4ecb71', waterLevel:0.55, rootDepth:0.58, density:1.0 },
-    { label:'Waterlogged', color:'#3ab5e8', waterLevel:0.98, rootDepth:0.22, density:0.15 },
-  ];
-
-  let t=0, lastTime=null;
-
-  // Pre-generate root paths for each panel
-  const rootSystems = panels.map((p,pi) => {
-    const roots=[];
-    const panelW=W/3, cx=panelW/2;
-    const baseY=H*0.06, depth=H*0.82*p.rootDepth;
-    const rng=(n)=>{let x=Math.sin(pi*300+n)*10000;return x-Math.floor(x);};
-    roots.push({type:'tap',x1:cx,y1:baseY,x2:cx,y2:baseY+depth,w:2.8});
-    const nlat=Math.floor(p.density*12)+2;
-    for(let i=0;i<nlat;i++) {
-      const frac=(i+1)/(nlat+1);
-      const y=baseY+depth*frac;
-      const dir=i%2===0?-1:1;
-      const sp=(panelW*0.38)*p.density*(0.4+rng(i+10)*0.6);
-      const ex=cx+dir*sp, ey=y+H*0.04*(0.3+rng(i+20)*0.7);
-      roots.push({type:'lat',x1:cx,y1:y,
-        cp1x:cx+dir*sp*0.3,cp1y:y+H*0.015,
-        cp2x:cx+dir*sp*0.7,cp2y:ey-H*0.012,
-        x2:ex,y2:ey,w:1.2+p.density*0.8});
-      if(p.density>0.5) {
-        const nf=Math.floor(p.density*5);
-        for(let j=0;j<nf;j++) {
-          roots.push({type:'fine',
-            x1:ex,y1:ey,
-            x2:ex+(rng(i*8+j)-.5)*panelW*0.18,
-            y2:ey+rng(i*8+j+5)*H*0.06,w:0.5});
-        }
-      }
-    }
-    return roots;
-  });
-
-  function render(now) {
-    if(!lastTime) lastTime=now;
-    const dt=(now-lastTime)/1000; lastTime=now;
-    t+=dt;
-    if(canvas.offsetWidth*devicePixelRatio!==W*devicePixelRatio) resize();
-    ctx.clearRect(0,0,W,H);
-
-    const panelW=W/3;
-
-    panels.forEach((panel,pi) => {
-      const ox=pi*panelW;
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(ox,0,panelW,H);
-      ctx.clip();
-      ctx.translate(ox,0);
-
-      // Panel background — soil layers
-      const skyH=H*0.06;
-      ctx.fillStyle='#1a3060'; ctx.fillRect(0,0,panelW,skyH);
-      ctx.fillStyle='#2d5a1b'; ctx.fillRect(0,skyH,panelW,H*0.025);
-      ctx.fillStyle='#5c3317'; ctx.fillRect(0,skyH+H*0.025,panelW,H*0.1);
-      ctx.fillStyle='#3d2208'; ctx.fillRect(0,skyH+H*0.125,panelW,H*0.38);
-      ctx.fillStyle='#2a1505'; ctx.fillRect(0,skyH+H*0.505,panelW,H*0.495);
-
-      // Water fill
-      const wc=panel.color==='#3ab5e8'?'58,181,232':panel.color==='#4ecb71'?'78,203,113':'232,93,58';
-      const wAlpha=panel.waterLevel*0.5;
-      const wGrad=ctx.createLinearGradient(0,skyH,0,H);
-      wGrad.addColorStop(0,`rgba(${wc},0)`);
-      wGrad.addColorStop(0.2,`rgba(${wc},${wAlpha})`);
-      wGrad.addColorStop(1,`rgba(${wc},${wAlpha*0.5})`);
-      ctx.fillStyle=wGrad; ctx.fillRect(0,skyH,panelW,H);
-
-      // Crop above ground
-      const cx2=panelW/2;
-      const stemH=H*0.08;
-      ctx.strokeStyle='#4a9934'; ctx.lineWidth=2.5;
-      ctx.beginPath();
-      const swayA=Math.sin(t*1.4+pi)*0.02*panelW*(panel.waterLevel>0.7?0.3:1);
-      ctx.moveTo(cx2,skyH);
-      ctx.bezierCurveTo(cx2+swayA*0.4,skyH-stemH*0.4,cx2+swayA*0.7,skyH-stemH*0.7,cx2+swayA,skyH-stemH);
-      ctx.stroke();
-      // Leaves
-      for(let lf=0;lf<2;lf++) {
-        const lfDir=lf===0?-1:1;
-        const lfY=skyH-stemH*(0.4+lf*0.25);
-        const lfX=cx2+swayA*(0.4+lf*0.25);
-        ctx.beginPath();
-        ctx.moveTo(lfX,lfY);
-        ctx.quadraticCurveTo(
-          lfX+lfDir*panelW*0.18,lfY-H*0.02,
-          lfX+lfDir*panelW*0.25,lfY+H*0.015
-        );
-        ctx.strokeStyle=`rgba(60,140,35,0.8)`;
-        ctx.lineWidth=1.5; ctx.stroke();
-      }
-      // Wheat head
-      const headX=cx2+swayA, headY=skyH-stemH;
-      for(let sp=-3;sp<=3;sp++) {
-        const sang=sp*0.1+swayA/panelW;
-        const slen=H*0.03*(0.4+(3-Math.abs(sp))*0.1);
-        ctx.beginPath();
-        ctx.moveTo(headX,headY);
-        ctx.lineTo(headX+Math.sin(sang)*slen*0.5,headY-slen);
-        ctx.strokeStyle=panel.waterLevel>0.7?'rgba(150,150,100,0.5)':'rgba(200,160,50,0.85)';
-        ctx.lineWidth=0.9; ctx.stroke();
-      }
-
-      // Roots glow filter via shadow
-      ctx.save();
-      if(panel.density>0.6) { ctx.shadowBlur=10; ctx.shadowColor=panel.color; }
-      rootSystems[pi].forEach(r => {
-        ctx.strokeStyle=panel.color;
-        ctx.lineWidth=r.w;
-        ctx.globalAlpha=r.type==='fine'?0.4:0.85;
-        ctx.beginPath();
-        if(r.type==='tap') { ctx.moveTo(r.x1,r.y1); ctx.lineTo(r.x2,r.y2); }
-        else if(r.type==='lat') { ctx.moveTo(r.x1,r.y1); ctx.bezierCurveTo(r.cp1x,r.cp1y,r.cp2x,r.cp2y,r.x2,r.y2); }
-        else { ctx.moveTo(r.x1,r.y1); ctx.lineTo(r.x2,r.y2); }
-        ctx.stroke();
-      });
-      ctx.restore();
-
-      // Rot circles for waterlogged
-      if(pi===2) {
-        for(let i=0;i<8;i++) {
-          const rx=panelW*0.2+((i*137)%1)*panelW*0.6;
-          const ry=H*0.2+((i*91)%1)*H*0.5;
-          const rr=(4+i%3*3)*(0.7+0.3*Math.sin(t*1.5+i));
-          ctx.beginPath(); ctx.arc(rx,ry,rr,0,Math.PI*2);
-          ctx.fillStyle=`rgba(200,80,40,${0.08+0.04*Math.sin(t+i)})`; ctx.fill();
-          ctx.strokeStyle=`rgba(200,80,40,0.2)`; ctx.lineWidth=1; ctx.stroke();
-        }
-      }
-
-      // Divider
-      if(pi<2) {
-        ctx.strokeStyle='rgba(240,232,220,0.06)'; ctx.lineWidth=1;
-        ctx.beginPath(); ctx.moveTo(panelW,0); ctx.lineTo(panelW,H); ctx.stroke();
-      }
-
-      // Panel color accent bar top
-      ctx.fillStyle=panel.color;
-      ctx.fillRect(0,0,panelW,2);
-
-      ctx.restore();
-    });
-
-    requestAnimationFrame(render);
-  }
-  requestAnimationFrame(render);
-})();
-
-// ══════════════════════════════════════════════════
-// (ALL AUDIO / VOICEOVER COMPONENTS HAVE BEEN REMOVED)
-// ══════════════════════════════════════════════════
-</script>
 </body>
 </html>
